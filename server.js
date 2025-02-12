@@ -78,6 +78,25 @@ app.delete('/api/v1/user/:id', (req, res) => {
   });
 
 
+app.put('/api/v1/user/:id', (req, res) => {
+    const parseResult = userSchema.safeParse(req.body);
+  
+    // Ha nem sikerült a validálás, hibaüzenetet küldünk
+    if (!parseResult.success) {
+      return res.status(400).json({ message: 'Nem megfelelő adat', error: parseResult.error.errors });
+    }
+  
+    const { email, password } = parseResult.data;
+    // Felhasználó adatainak frissítése az adatbázisban
+    db.run('UPDATE users SET email = ?, password = ? WHERE id = ?', [email, password, req.params.id], (err) => {
+      if (err) return res.status(500).json({ message: 'Adatbázis hiba' });
+      res.status(200).json({ message: 'Felhasználó frissítve' });
+    });
+});
+  
+
+
+
 app.post('/api/v1/createstore', function (req, res) {
     const parseResult = storeSchema.safeParse(req.body);
 
@@ -104,6 +123,8 @@ app.get('/api/v1/store/:id', function (req, res) {
       });
 
 })
+
+
 
 
 
