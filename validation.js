@@ -8,7 +8,7 @@ const userSchema = z.object({
 
 module.exports = { userSchema };
 
-// Store adatokat validáló séma
+// Bolt adatokat validáló séma
 const storeSchema = z.object({
     storename: z.string().min(1, { message: "A bolt neve nem lehet üres" }),
     zip: z.number().int().gte(1000, { message: "A postai irányítószámnak 4 számjegyűnek kell lennie" }).lt(10000, { message: "A postai irányítószámnak 4 számjegyűnek kell lennie" }),
