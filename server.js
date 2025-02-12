@@ -1,38 +1,12 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-const { userSchema, storeSchema } = require('./validation'); // Zod séma importálása
+import express from 'express';
+import { db } from './data.js';
+import { userSchema,storeSchema} from './validation.js';
+
+
 
 const app = express();
 app.use(express.json()); // Middleware a JSON body kezeléséhez
 
-// SQLite adatbázis létrehozása vagy megnyitása
-const db = new sqlite3.Database('./database.db', (e) => {
-  if (e) {
-    console.error('Hiba az adatbázis létrehozása közben:', err.message);
-  } else {
-    console.log('Adatbázis csatlakoztatva');
-  }
-});
-
-
-
-// Az adatbázis inicializálása (ha nincs, létrehozza)
-db.serialize(() => {
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE,
-    password TEXT
-  )`);
-});
-
-db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS store (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      storename TEXT,
-      zip INT,
-      region TEXT
-    )`);
-  });
 
 
 
