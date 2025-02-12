@@ -42,7 +42,7 @@ db.serialize(() => {
 
 
 
-// POST kérés az /api/v1/user végponton
+//felhasznalo
 app.post('/api/v1/user', (req, res) => {
     const parseResult = userSchema.safeParse(req.body);
   
@@ -96,8 +96,8 @@ app.put('/api/v1/user/:id', (req, res) => {
   
 
 
-
-app.post('/api/v1/createstore', function (req, res) {
+//bolt
+app.post('/api/v1/store', function (req, res) {
     const parseResult = storeSchema.safeParse(req.body);
 
     if (!parseResult.success) {
@@ -113,7 +113,7 @@ app.post('/api/v1/createstore', function (req, res) {
       });
 
 
-})
+});
 
 app.get('/api/v1/store/:id', function (req, res) {
     db.get('SELECT * FROM store WHERE id = ?', [req.params.id], (err, row) => {
@@ -122,10 +122,34 @@ app.get('/api/v1/store/:id', function (req, res) {
         res.status(200).json({ message: 'Sikeres lekérdezés', store: row });
       });
 
-})
+});
 
+app.delete('/api/v1/store/:id', (req, res) => {
+    // Felhasználó törlése az adatbázisból
+    db.run('DELETE FROM store WHERE id = ?', [req.params.id], function (err) {
+      if (err) return res.status(500).json({ message: 'Adatbázis hiba' });
+      if (this.changes === 0) return res.status(404).json({ message: 'Bolt nem található' });
+  
+      res.status(200).json({ message: 'Bolt törölve' });
+    });
+});
 
-
+app.put('/api/v1/store/:id', (req, res) => {
+    const parseResult = storeSchema.safeParse(req.body);
+  
+    if (!parseResult.success) {
+      return res.status(400).json({ message: 'Nem megfelelő adat', error: parseResult.error.errors });
+    }
+  
+    const { storename, zip, region } = parseResult.data;
+  
+    // Bolt adatainak frissítése az adatbázisban
+    db.run('UPDATE store SET storename = ?, zip = ?, region = ? WHERE id = ?', [storename, zip, region, req.params.id], (err) => {
+      if (err) return res.status(500).json({ message: 'Adatbázis hiba' });
+      // Sikeres frissítés
+      res.status(200).json({ message: 'Bolt frissítve' });
+    });
+});
 
 
 
